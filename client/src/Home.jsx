@@ -1,12 +1,11 @@
 import React, { useRef } from 'react';
 import HeroSection from './HeroSection';
 import ProductShowcase from './ProductShowcase'; 
-import './App.css';
 import Offer from './Offer';
 import About from './About';
 import CustomerReviews from './CustomerReviews';
 import ContactUs from './ContactUs';
-import Footer from './Footer';
+import Footer from './footer';
 
 function Home({ aboutSectionRef }) {
   const productSectionRef = useRef(null); 

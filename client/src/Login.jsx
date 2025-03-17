@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
@@ -11,41 +11,21 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setMessage("Please enter both email and password.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setMessage("Password must be at least 6 characters long.");
-      return;
-    }
-
-    setMessage("");
-
+    console.log("Login request payload: ", { email, password }); // Log the email and password sent
     try {
-      const response = await axios.post("http://localhost:5000/login", {
+      const response = await axios.post("http://localhost:3001/api/login", {
         email,
         password,
       });
 
-      console.log("API Response:", response.data); // Debugging
-
-      if (response.data.message === "Login Successful") {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-
-        setMessage("Login Successful! Redirecting...");
-        setTimeout(() => navigate("/home"), 1000);
+      if (response.data.success) {
+        navigate("/home");
       } else {
-        setMessage(response.data.error || "Invalid credentials. Please try again.");
+        setMessage("Invalid credentials");
       }
     } catch (error) {
-      if (error.response) {
-        setMessage(error.response.data.error || "Something went wrong. Please try again.");
-      } else {
-        setMessage("Could not connect to the server. Please try again later.");
-      }
+      setMessage("Login failed. Please try again.");
+      console.error("Login error", error);
     }
   };
 
@@ -53,6 +33,7 @@ function Login() {
     <div style={styles.container}>
       <div style={styles.loginBox}>
         <h2 style={styles.heading}>Login</h2>
+        {message && <p style={styles.error}>{message}</p>}
         <form onSubmit={handleSubmit}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email</label>
@@ -60,35 +41,31 @@ function Login() {
               type="email"
               placeholder="Enter Email"
               autoComplete="off"
-              style={styles.input}
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
+              style={styles.input}
+              required
             />
           </div>
-
           <div style={styles.inputGroup}>
             <label style={styles.label}>Password</label>
             <input
               type="password"
               placeholder="Enter Password"
               autoComplete="off"
-              style={styles.input}
-              value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+              required
             />
           </div>
-
-          {message && (
-            <p style={message.includes("Success") ? styles.success : styles.error}>
-              {message}
-            </p>
-          )}
-
-          <button type="submit" style={styles.button}>Login</button>
+          <button type="submit" style={styles.button}>
+            Login
+          </button>
         </form>
-
-        <p style={styles.signupText}>Don't have an Account?</p>
-        <Link to="/signup" style={styles.signupButton}>Signup</Link>
+        <p style={styles.signupText}>Don't have an account?</p>
+        <Link to="/signup" style={styles.signupButton}>
+          Sign Up
+        </Link>{" "}
+        {/* Link for Sign Up */}
       </div>
     </div>
   );
@@ -100,72 +77,68 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    background: "linear-gradient(135deg, #00b09b, #96c93d)", // Gradient background
     padding: "10px",
   },
   loginBox: {
     background: "white",
-    padding: "1rem",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-    width: "280px",
+    padding: "2rem",
+    borderRadius: "10px",
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+    width: "320px",
     textAlign: "center",
   },
   heading: {
-    marginBottom: "8px",
+    marginBottom: "15px",
     color: "#333",
-    fontSize: "20px",
+    fontSize: "24px",
+    fontWeight: "bold",
   },
   inputGroup: {
-    marginBottom: "8px",
+    marginBottom: "15px",
     textAlign: "left",
   },
   label: {
     fontWeight: "bold",
     display: "block",
-    fontSize: "13px",
-    marginBottom: "2px",
+    fontSize: "14px",
+    marginBottom: "5px",
   },
   input: {
     width: "100%",
-    padding: "7px",
-    borderRadius: "4px",
+    padding: "10px",
+    borderRadius: "5px",
     border: "1px solid #ccc",
-    fontSize: "13px",
+    fontSize: "14px",
   },
   error: {
     color: "red",
     fontSize: "12px",
-    marginBottom: "6px",
-  },
-  success: {
-    color: "green",
-    fontSize: "12px",
-    marginBottom: "6px",
+    marginBottom: "8px",
   },
   button: {
     width: "100%",
-    padding: "7px",
-    borderRadius: "4px",
+    padding: "10px",
+    borderRadius: "5px",
     border: "none",
-    backgroundColor: "#28a745",
+    backgroundColor: "#28a745", // Same as signup button
     color: "white",
-    fontSize: "15px",
+    fontSize: "16px",
     cursor: "pointer",
     transition: "background 0.3s",
   },
   signupText: {
-    marginTop: "5px",
-    fontSize: "12px",
+    marginTop: "10px",
+    fontSize: "14px",
     color: "#555",
   },
   signupButton: {
-    display: "inline-block",
-    marginTop: "4px",
-    padding: "7px",
+    display: "block",
+    marginTop: "10px",
+    padding: "10px",
     width: "100%",
     textAlign: "center",
-    borderRadius: "4px",
+    borderRadius: "5px",
     border: "1px solid #28a745",
     backgroundColor: "white",
     color: "#28a745",

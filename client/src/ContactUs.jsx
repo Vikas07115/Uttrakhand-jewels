@@ -27,7 +27,7 @@ function ContactUs() {
     <div className="contact-us-container">
       <div className="contact-us-left">
         <img
-          src="https://via.placeholder.com/400x500" 
+          src="/chandeli haar.webp" 
           alt="Uttarakhand Jewelry"
           className="contact-us-image"
         />

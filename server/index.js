@@ -1,39 +1,32 @@
-const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    if (!email || !password) {
-      setMessage("Please enter both email and password.");
-      return;
-    }
-  
-    if (password.length < 6) {
-      setMessage("Password must be at least 6 characters long.");
-      return;
-    }
-  
-    setMessage("");
-  
-    try {
-      const response = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
-  
-      console.log("API Response:", response.data); // Debugging
-  
-      if (response.data.message === "Login Successful") {
-        localStorage.setItem("token", response.data.token);
-        setMessage("Login Successful! Redirecting...");
-        setTimeout(() => navigate("/home"), 1000);
-      } else {
-        setMessage(response.data.error || "Invalid credentials. Please try again.");
-      }
-    } catch (error) {
-      if (error.response) {
-        setMessage(error.response.data.error || "Something went wrong. Please try again.");
-      } else {
-        setMessage("Could not connect to the server. Please try again later.");
-      }
-    }
-  };
-  
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const cors = require("cors");
+
+
+dotenv.config({ path: './config/config.env' }); 
+
+
+const app = express();
+
+app.use(express.json()); 
+app.use(cors()); 
+
+
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("MongoDB connected successfully.");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
+
+
+const userRoutes = require("./routes/userRoutes");
+app.use("/api", userRoutes);
+
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
